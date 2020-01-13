@@ -46,7 +46,7 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
-I2S_HandleTypeDef hi2s3;
+UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN PV */
 
@@ -56,7 +56,7 @@ I2S_HandleTypeDef hi2s3;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
-static void MX_I2S3_Init(void);
+static void MX_USART6_UART_Init(void);
 void MX_USB_HOST_Process(void);
 
 /* USER CODE BEGIN PFP */
@@ -96,9 +96,9 @@ int main(void) {
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
     MX_I2C1_Init();
-    MX_I2S3_Init();
     MX_LWIP_Init();
     MX_USB_HOST_Init();
+    MX_USART6_UART_Init();
     /* USER CODE BEGIN 2 */
 
     /* USER CODE END 2 */
@@ -107,8 +107,7 @@ int main(void) {
     /* USER CODE BEGIN WHILE */
     httpd_init();
     while (1) {
-        HAL_GPIO_TogglePin(GPIOD, LD3_Pin);
-        HAL_GPIO_TogglePin(GPIOD, LD4_Pin);
+        HAL_UART_Transmit(&huart6, "Hello", 5, 1000);
         /* USER CODE END WHILE */
         MX_USB_HOST_Process();
 
@@ -125,7 +124,6 @@ int main(void) {
 void SystemClock_Config(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
     RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
-    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = { 0 };
 
     /** Configure the main internal regulator output voltage 
   */
@@ -154,12 +152,6 @@ void SystemClock_Config(void) {
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK) {
-        Error_Handler();
-    }
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_I2S;
-    PeriphClkInitStruct.PLLI2S.PLLI2SN = 192;
-    PeriphClkInitStruct.PLLI2S.PLLI2SR = 2;
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
         Error_Handler();
     }
 }
@@ -196,34 +188,33 @@ static void MX_I2C1_Init(void) {
 }
 
 /**
-  * @brief I2S3 Initialization Function
+  * @brief USART6 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_I2S3_Init(void) {
+static void MX_USART6_UART_Init(void) {
 
-    /* USER CODE BEGIN I2S3_Init 0 */
+    /* USER CODE BEGIN USART6_Init 0 */
 
-    /* USER CODE END I2S3_Init 0 */
+    /* USER CODE END USART6_Init 0 */
 
-    /* USER CODE BEGIN I2S3_Init 1 */
+    /* USER CODE BEGIN USART6_Init 1 */
 
-    /* USER CODE END I2S3_Init 1 */
-    hi2s3.Instance = SPI3;
-    hi2s3.Init.Mode = I2S_MODE_MASTER_TX;
-    hi2s3.Init.Standard = I2S_STANDARD_PHILIPS;
-    hi2s3.Init.DataFormat = I2S_DATAFORMAT_16B;
-    hi2s3.Init.MCLKOutput = I2S_MCLKOUTPUT_ENABLE;
-    hi2s3.Init.AudioFreq = I2S_AUDIOFREQ_96K;
-    hi2s3.Init.CPOL = I2S_CPOL_LOW;
-    hi2s3.Init.ClockSource = I2S_CLOCK_PLL;
-    hi2s3.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;
-    if (HAL_I2S_Init(&hi2s3) != HAL_OK) {
+    /* USER CODE END USART6_Init 1 */
+    huart6.Instance = USART6;
+    huart6.Init.BaudRate = 115200;
+    huart6.Init.WordLength = UART_WORDLENGTH_8B;
+    huart6.Init.StopBits = UART_STOPBITS_1;
+    huart6.Init.Parity = UART_PARITY_NONE;
+    huart6.Init.Mode = UART_MODE_TX_RX;
+    huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    huart6.Init.OverSampling = UART_OVERSAMPLING_16;
+    if (HAL_UART_Init(&huart6) != HAL_OK) {
         Error_Handler();
     }
-    /* USER CODE BEGIN I2S3_Init 2 */
+    /* USER CODE BEGIN USART6_Init 2 */
 
-    /* USER CODE END I2S3_Init 2 */
+    /* USER CODE END USART6_Init 2 */
 }
 
 /**
@@ -279,6 +270,14 @@ static void MX_GPIO_Init(void) {
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
+    /*Configure GPIO pin : I2S3_WS_Pin */
+    GPIO_InitStruct.Pin = I2S3_WS_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
+    HAL_GPIO_Init(I2S3_WS_GPIO_Port, &GPIO_InitStruct);
+
     /*Configure GPIO pins : SPI1_SCK_Pin SPI1_MISO_Pin */
     GPIO_InitStruct.Pin = SPI1_SCK_Pin | SPI1_MISO_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -309,6 +308,14 @@ static void MX_GPIO_Init(void) {
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+    /*Configure GPIO pins : I2S3_SCK_Pin I2S3_SD_Pin */
+    GPIO_InitStruct.Pin = I2S3_SCK_Pin | I2S3_SD_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /*Configure GPIO pin : OTG_FS_OverCurrent_Pin */
     GPIO_InitStruct.Pin = OTG_FS_OverCurrent_Pin;
