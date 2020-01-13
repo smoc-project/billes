@@ -58,5 +58,4 @@ engine.h
 index_html.h
 build/
 .metadata/
-*.ld
 *.bak
