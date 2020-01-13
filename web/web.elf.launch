@@ -21,18 +21,18 @@
 <booleanAttribute key="com.atollic.hardwaredebug.stlink.enable_external_loader" value="false"/>
 <booleanAttribute key="com.atollic.hardwaredebug.stlink.enable_logging" value="false"/>
 <stringAttribute key="com.atollic.hardwaredebug.stlink.external_loader" value=""/>
-<stringAttribute key="com.atollic.hardwaredebug.stlink.log_file" value="/home/sfluor/cubemx/billes/Debug/st-link_gdbserver_log.txt"/>
+<stringAttribute key="com.atollic.hardwaredebug.stlink.log_file" value="/home/nockty/OSY/SMOC/sandbox/billes/web/Debug/st-link_gdbserver_log.txt"/>
 <booleanAttribute key="com.atollic.hardwaredebug.stlink.stlink_check_serial_number" value="false"/>
 <stringAttribute key="com.atollic.hardwaredebug.stlink.stlink_txt_serial_number" value=""/>
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_NAME" value="${TOOLCHAIN_PATH}/arm-atollic-eabi-gdb"/>
 <intAttribute key="org.eclipse.cdt.launch.ATTR_BUILD_BEFORE_LAUNCH_ATTR" value="2"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_REGISTER_GROUPS" value=""/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug/billes.elf"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="billes"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug/web.elf"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="web"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value=""/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/billes"/>
+<listEntry value="/web"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>

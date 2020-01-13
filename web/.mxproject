@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=/home/nockty/Documents/3A/OSY/SMOC/sandbox/billes/Inc
+HeaderPath=/home/nockty/Documents/3A/OSY/SMOC/sandbox/billes/web/Inc
 HeaderFiles=lwip.h;lwipopts.h;ethernetif.h;usb_host.h;usbh_conf.h;usbh_platform.h;stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;
-SourcePath=/home/nockty/Documents/3A/OSY/SMOC/sandbox/billes/Src
+SourcePath=/home/nockty/Documents/3A/OSY/SMOC/sandbox/billes/web/Src
 SourceFiles=lwip.c;ethernetif.c;usb_host.c;usbh_conf.c;usbh_platform.c;stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]
