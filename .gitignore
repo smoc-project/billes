@@ -56,3 +56,6 @@ Debug/
 .settings/
 engine.h
 index_html.h
+build/
+.metadata/
+*.bak
