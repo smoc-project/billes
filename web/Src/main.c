@@ -66,6 +66,28 @@ void MX_USB_HOST_Process(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+uint8_t recv_char = 0;
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart) {
+    switch (recv_char) {
+    case 'o':
+        HAL_GPIO_TogglePin(GPIOD, LD3_Pin);
+        break;
+    case 'g':
+        HAL_GPIO_TogglePin(GPIOD, LD4_Pin);
+        break;
+    case 'r':
+        HAL_GPIO_TogglePin(GPIOD, LD5_Pin);
+        break;
+    case 'b':
+        HAL_GPIO_TogglePin(GPIOD, LD6_Pin);
+        break;
+    default:
+        break;
+    }
+    // Restart receiving data on USART6
+    HAL_UART_Receive_IT(&huart6, &recv_char, 1);
+}
 /* USER CODE END 0 */
 
 /**
@@ -100,6 +122,8 @@ int main(void) {
     MX_USB_HOST_Init();
     MX_USART6_UART_Init();
     /* USER CODE BEGIN 2 */
+    // Start receiving data on USART6
+    HAL_UART_Receive_IT(&huart6, &recv_char, 1);
 
     /* USER CODE END 2 */
 
@@ -107,7 +131,6 @@ int main(void) {
     /* USER CODE BEGIN WHILE */
     httpd_init();
     while (1) {
-        HAL_UART_Transmit(&huart6, "Hello", 5, 1000);
         /* USER CODE END WHILE */
         MX_USB_HOST_Process();
 
