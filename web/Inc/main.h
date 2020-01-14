@@ -39,11 +39,6 @@ typedef struct {
     float y;
 } move_t;
 
-typedef struct {
-    uint8_t len;
-    move_t* moves;
-} event_move_t;
-
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
