@@ -33,6 +33,13 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+typedef struct {
+    uint8_t id;
+    float x;
+    float y;
+    float z;
+} move_t;
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
