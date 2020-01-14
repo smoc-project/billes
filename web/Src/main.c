@@ -72,7 +72,7 @@ void MX_USB_HOST_Process(void);
 // Accelerometer constants
 USART_TypeDef* ACCELEROMETER = USART3;
 UART_HandleTypeDef* UART_ACCELEROMETER = &huart3;
-#define ACCELEROMETER_FRAMES_LEN 8
+#define ACCELEROMETER_FRAMES_LEN 12
 
 // Radio constants
 USART_TypeDef* RADIO = USART6;
@@ -81,9 +81,9 @@ UART_HandleTypeDef* UART_RADIO = &huart6;
 #define RADIO_OUT_FRAMES_LEN 13
 
 // Frames data
-static char acceloremeter_in[ACCELEROMETER_FRAMES_LEN];
-static char radio_in[RADIO_IN_FRAMES_LEN];
-static char radio_out[RADIO_OUT_FRAMES_LEN];
+char acceloremeter_in[ACCELEROMETER_FRAMES_LEN];
+char radio_in[RADIO_IN_FRAMES_LEN];
+char radio_out[RADIO_OUT_FRAMES_LEN];
 
 void send_acc_to_radio(move_t move) {
     memcpy(radio_out, &move.id, 1);
