@@ -78,7 +78,7 @@ UART_HandleTypeDef* UART_ACCELEROMETER = &huart3;
 USART_TypeDef* RADIO = USART6;
 UART_HandleTypeDef* UART_RADIO = &huart6;
 #define RADIO_IN_FRAMES_LEN 10
-#define RADIO_OUT_FRAMES_LEN 9
+#define RADIO_OUT_FRAMES_LEN 13
 
 // Frames data
 static char acceloremeter_in[ACCELEROMETER_FRAMES_LEN];
@@ -89,6 +89,7 @@ void send_acc_to_radio(move_t move) {
     memcpy(radio_out, &move.id, 1);
     memcpy(radio_out + 1, &move.x, 4);
     memcpy(radio_out + 5, &move.y, 4);
+    memcpy(radio_out + 9, &move.y, 4);
     HAL_UART_Transmit(UART_RADIO, radio_out, RADIO_OUT_FRAMES_LEN, 1000);
 }
 
@@ -96,11 +97,13 @@ void handle_accelerometer_message() {
     // Decode accelerations
     float x = *(float*)acceloremeter_in;
     float y = *(float*)(acceloremeter_in + 4);
+    float z = *(float*)(acceloremeter_in + 8);
 
     move_t move = (move_t) {
         .id = 100, // TODO: stop hardcoding this,
         .x = x,
         .y = y,
+        .z = z,
     };
 
     send_acc_to_radio(move);

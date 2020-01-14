@@ -37,6 +37,7 @@ typedef struct {
     uint8_t id;
     float x;
     float y;
+    float z;
 } move_t;
 
 /* USER CODE END Includes */
