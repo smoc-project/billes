@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "httpd.h"
 #include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
+UART_HandleTypeDef huart3;
 UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN PV */
@@ -57,6 +59,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART6_UART_Init(void);
+static void MX_USART3_UART_Init(void);
 void MX_USB_HOST_Process(void);
 
 /* USER CODE BEGIN PFP */
@@ -66,10 +69,48 @@ void MX_USB_HOST_Process(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-uint8_t recv_char = 0;
+// Accelerometer constants
+USART_TypeDef* ACCELEROMETER = USART3;
+UART_HandleTypeDef* UART_ACCELEROMETER = &huart3;
+#define ACCELEROMETER_FRAMES_LEN 8
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart) {
-    switch (recv_char) {
+// Radio constants
+USART_TypeDef* RADIO = USART6;
+UART_HandleTypeDef* UART_RADIO = &huart6;
+#define RADIO_IN_FRAMES_LEN 10
+#define RADIO_OUT_FRAMES_LEN 9
+
+// Frames data
+static char acceloremeter_in[ACCELEROMETER_FRAMES_LEN];
+static char radio_in[RADIO_IN_FRAMES_LEN];
+static char radio_out[RADIO_OUT_FRAMES_LEN];
+
+void send_acc_to_radio(move_t move) {
+    memcpy(radio_out, &move.id, 1);
+    memcpy(radio_out + 1, &move.x, 4);
+    memcpy(radio_out + 5, &move.y, 4);
+    HAL_UART_Transmit(UART_RADIO, radio_out, RADIO_OUT_FRAMES_LEN, 1000);
+}
+
+void handle_accelerometer_message() {
+    // Decode accelerations
+    float x = *(float*)acceloremeter_in;
+    float y = *(float*)(acceloremeter_in + 4);
+
+    move_t move = (move_t) {
+        .id = 100, // TODO: stop hardcoding this,
+        .x = x,
+        .y = y,
+    };
+
+    send_acc_to_radio(move);
+
+    // Restart receiving data on accelerometer
+    HAL_UART_Receive_IT(UART_ACCELEROMETER, acceloremeter_in, ACCELEROMETER_FRAMES_LEN);
+}
+
+void handle_radio_debug_led() {
+    switch (radio_in[1]) {
     case 'o':
         HAL_GPIO_TogglePin(GPIOD, LD3_Pin);
         break;
@@ -85,8 +126,35 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart) {
     default:
         break;
     }
-    // Restart receiving data on USART6
-    HAL_UART_Receive_IT(&huart6, &recv_char, 1);
+}
+
+void handle_radio_message() {
+    // Switch on type
+    switch (radio_in[0]) {
+    // Debug type
+    case 250:
+        handle_radio_debug_led();
+        break;
+    default:
+        // TODO: receive data from other players
+        // and store them locally
+        break;
+    }
+
+    // Restart receiving data on radio
+    // Data frames:
+    // 1 bytes for message type | 1 byte for ID | 4 bytes for X | 4 bytes for Y
+    HAL_UART_Receive_IT(UART_RADIO, radio_in, RADIO_IN_FRAMES_LEN);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart) {
+    if (huart->Instance == ACCELEROMETER) {
+        handle_accelerometer_message();
+    }
+
+    if (huart->Instance == RADIO) {
+        handle_radio_message();
+    }
 }
 /* USER CODE END 0 */
 
@@ -121,9 +189,11 @@ int main(void) {
     MX_LWIP_Init();
     MX_USB_HOST_Init();
     MX_USART6_UART_Init();
+    MX_USART3_UART_Init();
     /* USER CODE BEGIN 2 */
-    // Start receiving data on USART6
-    HAL_UART_Receive_IT(&huart6, &recv_char, 1);
+    // Start receiving data on USART3 and USART6
+    HAL_UART_Receive_IT(UART_ACCELEROMETER, acceloremeter_in, ACCELEROMETER_FRAMES_LEN);
+    HAL_UART_Receive_IT(UART_RADIO, radio_in, RADIO_IN_FRAMES_LEN);
 
     /* USER CODE END 2 */
 
@@ -208,6 +278,36 @@ static void MX_I2C1_Init(void) {
     /* USER CODE BEGIN I2C1_Init 2 */
 
     /* USER CODE END I2C1_Init 2 */
+}
+
+/**
+  * @brief USART3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART3_UART_Init(void) {
+
+    /* USER CODE BEGIN USART3_Init 0 */
+
+    /* USER CODE END USART3_Init 0 */
+
+    /* USER CODE BEGIN USART3_Init 1 */
+
+    /* USER CODE END USART3_Init 1 */
+    huart3.Instance = USART3;
+    huart3.Init.BaudRate = 115200;
+    huart3.Init.WordLength = UART_WORDLENGTH_8B;
+    huart3.Init.StopBits = UART_STOPBITS_1;
+    huart3.Init.Parity = UART_PARITY_NONE;
+    huart3.Init.Mode = UART_MODE_TX_RX;
+    huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+    if (HAL_UART_Init(&huart3) != HAL_OK) {
+        Error_Handler();
+    }
+    /* USER CODE BEGIN USART3_Init 2 */
+
+    /* USER CODE END USART3_Init 2 */
 }
 
 /**
