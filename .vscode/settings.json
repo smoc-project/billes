@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "lis3dsh.h": "c",
+        "types.h": "c",
+        "stdint.h": "c"
+    }
+}
