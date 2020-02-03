@@ -8,7 +8,7 @@ DEBUG_TYPE = 250
 RADIO_FRAME_LEN = 13
 
 def send_led_command(ser, led):
-    ser.write(bytes([DEBUG_TYPE, led]))
+    ser.write(bytes([DEBUG_TYPE, led] + 8 * [42]))
 
 
 with serial.Serial(sys.argv[1], 115200, timeout=1) as ser:
