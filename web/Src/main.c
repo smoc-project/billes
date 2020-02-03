@@ -72,13 +72,13 @@ void MX_USB_HOST_Process(void);
 // Accelerometer constants
 USART_TypeDef* ACCELEROMETER = USART3;
 UART_HandleTypeDef* UART_ACCELEROMETER = &huart3;
-#define ACCELEROMETER_FRAMES_LEN 12
+#define ACCELEROMETER_FRAMES_LEN 3
 
 // Radio constants
 USART_TypeDef* RADIO = USART6;
 UART_HandleTypeDef* UART_RADIO = &huart6;
-#define RADIO_IN_FRAMES_LEN 13
-#define RADIO_OUT_FRAMES_LEN 13
+#define RADIO_IN_FRAMES_LEN 4
+#define RADIO_OUT_FRAMES_LEN 4
 
 // Frames data
 char acceloremeter_in[ACCELEROMETER_FRAMES_LEN];
@@ -86,18 +86,15 @@ char radio_in[RADIO_IN_FRAMES_LEN];
 char radio_out[RADIO_OUT_FRAMES_LEN];
 
 void send_acc_to_radio(move_t move) {
-    memcpy(radio_out, &move.id, 1);
-    memcpy(radio_out + 1, &move.x, 4);
-    memcpy(radio_out + 5, &move.y, 4);
-    memcpy(radio_out + 9, &move.z, 4);
+    memcpy(radio_out, &move.id, RADIO_OUT_FRAMES_LEN);
     HAL_UART_Transmit(UART_RADIO, radio_out, RADIO_OUT_FRAMES_LEN, 1000);
 }
 
 move_t decode_message(char* buf) {
     // Decode accelerations
-    float x = *(float*)buf;
-    float y = *(float*)(buf + 4);
-    float z = *(float*)(buf + 8);
+    int8_t x = buf[0];
+    int8_t y = buf[1];
+    int8_t z = buf[2];
 
     move_t move = (move_t) {
         .id = 100, // TODO: stop hardcoding this,

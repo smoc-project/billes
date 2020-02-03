@@ -7,15 +7,15 @@ from itertools import cycle
 
 LED_MSG = 250
 POS_MSG = 251
-RADIO_FRAME_LEN = 13
+RADIO_FRAME_LEN = 4
 
 def send_led_command(ser, led):
-    raw = bytes([LED_MSG, led] + 11 * [42])
+    raw = bytes([LED_MSG, led] + 2 * [42])
     assert len(raw) == RADIO_FRAME_LEN
     ser.write(raw)
 
 def send_pos_command(ser, x, y, z):
-    raw = bytes([POS_MSG, *struct.pack("fff", x, y, z)])
+    raw = bytes([POS_MSG, *struct.pack("bbb", x, y, z)])
     assert len(raw) == RADIO_FRAME_LEN
     ser.write(raw)
 
@@ -28,13 +28,13 @@ with serial.Serial(sys.argv[1], 115200, timeout=1) as ser:
         if raw:
             client_id = int(raw[0])
 
-            x, y, z = struct.unpack_from("fff", raw[1:])
+            x, y, z = struct.unpack_from("bbb", raw[1:])
             print(f'Received: id:{client_id}, x:{x}, y:{y}, z:{z}')
 
         time.sleep(0.1)
 
         if i == 0:
-            x += random()
-            y += random()
-            z += random()
+            x += int(10 * random()) - 5
+            y += int(10 * random()) - 5
+            z += int(10 * random()) - 5
             send_pos_command(ser, x, y, z)

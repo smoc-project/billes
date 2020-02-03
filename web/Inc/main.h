@@ -35,9 +35,9 @@ extern "C" {
 
 typedef struct {
     uint8_t id;
-    float x;
-    float y;
-    float z;
+    int8_t x;
+    int8_t y;
+    int8_t z;
 } move_t;
 
 move_t global_pos;
