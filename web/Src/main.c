@@ -77,7 +77,7 @@ UART_HandleTypeDef* UART_ACCELEROMETER = &huart3;
 // Radio constants
 USART_TypeDef* RADIO = USART6;
 UART_HandleTypeDef* UART_RADIO = &huart6;
-#define RADIO_IN_FRAMES_LEN 10
+#define RADIO_IN_FRAMES_LEN 13
 #define RADIO_OUT_FRAMES_LEN 13
 
 // Frames data
