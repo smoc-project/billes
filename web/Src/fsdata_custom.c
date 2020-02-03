@@ -1,6 +1,7 @@
 #include "engine.h"
 #include "index_html.h"
 #include "lwip/apps/fs.h"
+#include <main.h>
 #include <string.h>
 
 #define FS_ROOT 0
@@ -158,6 +159,12 @@ int fs_open_custom(struct fs_file* file, const char* name) {
         HAL_GPIO_TogglePin(GPIOD, LD6_Pin);
         file->data = ok;
         len = strlen(ok);
+    } else if (strcmp(name, "/data") == 0) {
+        // TODO
+        char* data = (char*)malloc(50);
+        sprintf(data, "global pos: %hhu, %f, %f, %f", global_pos.id, global_pos.x, global_pos.y, global_pos.z);
+        file->data = data;
+        file->flags |= 0x04;
     } else {
         len = strlen(hello1) + strlen(hello2) + strlen(name);
         file->data = (char*)malloc(len + 1);

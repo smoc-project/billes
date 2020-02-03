@@ -93,11 +93,11 @@ void send_acc_to_radio(move_t move) {
     HAL_UART_Transmit(UART_RADIO, radio_out, RADIO_OUT_FRAMES_LEN, 1000);
 }
 
-void handle_accelerometer_message() {
+move_t decode_message(char* buf) {
     // Decode accelerations
-    float x = *(float*)acceloremeter_in;
-    float y = *(float*)(acceloremeter_in + 4);
-    float z = *(float*)(acceloremeter_in + 8);
+    float x = *(float*)buf;
+    float y = *(float*)(buf + 4);
+    float z = *(float*)(buf + 8);
 
     move_t move = (move_t) {
         .id = 100, // TODO: stop hardcoding this,
@@ -105,6 +105,12 @@ void handle_accelerometer_message() {
         .y = y,
         .z = z,
     };
+
+    return move;
+}
+
+void handle_accelerometer_message() {
+    move_t move = decode_message(acceloremeter_in);
 
     send_acc_to_radio(move);
 
@@ -131,12 +137,21 @@ void handle_radio_debug_led() {
     }
 }
 
+void handle_radio_debug_pos() {
+    move_t move = decode_message(&radio_in[1]);
+    global_pos = move;
+}
+
 void handle_radio_message() {
     // Switch on type
     switch (radio_in[0]) {
-    // Debug type
+    // Debug LED type
     case 250:
         handle_radio_debug_led();
+        break;
+    // Debug POS
+    case 251:
+        handle_radio_debug_pos();
         break;
     default:
         // TODO: receive data from other players

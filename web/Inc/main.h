@@ -40,6 +40,8 @@ typedef struct {
     float z;
 } move_t;
 
+move_t global_pos;
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
