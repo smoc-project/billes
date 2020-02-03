@@ -162,7 +162,7 @@ int fs_open_custom(struct fs_file* file, const char* name) {
     } else if (strcmp(name, "/data.html") == 0) {
         // TODO
         char* data = (char*)malloc(50);
-        sprintf(data, "global pos: %hhu, %f, %f, %f", global_pos.id, global_pos.x, global_pos.y, global_pos.z);
+        sprintf(data, "global pos: %d, %d, %d, %d", global_pos.id, 42, -69, 0);
         len = strlen(data);
         file->data = data;
         file->flags |= 0x04;

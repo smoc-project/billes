@@ -63,6 +63,38 @@ static void MX_USART6_UART_Init(void);
 /* USER CODE BEGIN 0 */
 
 LIS3DSH_DataScaled accData;
+int8_t accMove[3];
+
+void convertAccData(int8_t accMove[3], LIS3DSH_DataScaled *accData)
+{
+  accMove[0] = (int8_t) (accData->x / 10);
+  if (accMove[0] < -100)
+  {
+    accMove[0] = -100;
+  }
+  else if (accMove[0] > 100)
+  {
+    accMove[0] = 100;
+  }
+  accMove[1] = (int8_t) (accData->y / 10);
+  if (accMove[1] < -100)
+  {
+    accMove[1] = -100;
+  }
+  else if (accMove[1] > 100)
+  {
+    accMove[1] = 100;
+  }
+  accMove[2] = (int8_t) (accData->z / 10);
+  if (accMove[2] < -100)
+  {
+    accMove[2] = -100;
+  }
+  else if (accMove[2] > 100)
+  {
+    accMove[2] = 100;
+  }
+}
 
 // uint8_t recv_char = 0;
 
@@ -102,7 +134,7 @@ int main(void)
 
   /* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  /* Reset of all peripherals int8_t[3], Initializes the Flash interface and the Systick. */
   HAL_Init();
 
   /* USER CODE BEGIN Init */
@@ -147,8 +179,8 @@ int main(void)
       accData = LIS3DSH_GetDataScaled();
       HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
     }
-
-    HAL_UART_Transmit(&huart6, "8", 4, 1000);
+    convertAccData(&accMove, &accData);
+    HAL_UART_Transmit(&huart6, &accMove, 3, 1000);
   }
   /* USER CODE END 3 */
 }

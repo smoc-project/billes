@@ -33,8 +33,9 @@ with serial.Serial(sys.argv[1], 115200, timeout=1) as ser:
 
         time.sleep(0.1)
 
-        if i == 0:
-            x += random()
-            y += random()
-            z += random()
+        if i % 4 == 0:
+            x += random.random()
+            y += random.random()
+            z += random.random()
             send_pos_command(ser, x, y, z)
+            print(f"x={x};y={y};z={z}")
