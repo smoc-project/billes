@@ -8,9 +8,10 @@ To build the project just run `make` it will create a `build/billes.elf` binary.
 To load it:
 
 - Start `st-util` in one terminal
-- In the other run a `gdb` session and inside it:
+- In the other run a `gdb` session and inside it if not run automatically by .gdbinit, you can run:
 
 ```gdb
-target extend-remote :4242
+target extended-remote :4242
 load build/billes.elf
+continue
 ```
