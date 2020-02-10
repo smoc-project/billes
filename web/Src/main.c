@@ -363,6 +363,8 @@ static void MX_USART6_UART_Init(void) {
     }
     /* USER CODE BEGIN USART6_Init 2 */
 
+    __HAL_UART_ENABLE_IT(&huart6, UART_IT_RXNE);
+
     /* USER CODE END USART6_Init 2 */
 }
 
