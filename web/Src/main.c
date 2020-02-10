@@ -28,6 +28,8 @@
 #include "httpd.h"
 #include <stdio.h>
 #include <string.h>
+
+#include "bum_player.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -171,6 +173,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart) {
         handle_radio_message();
     }
 }
+
+#define JSON_ORDERS_SIZE 500
+
+char json_orders[JSON_ORDERS_SIZE + 1];
+WebInterface wi;
+
 /* USER CODE END 0 */
 
 /**

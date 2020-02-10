@@ -38,6 +38,8 @@ BUILD_DIR = build
 C_SOURCES =  \
 Src/main.c \
 Src/lwip.c \
+Src/event.c \
+Src/xbee.c \
 Src/ethernetif.c \
 Src/usb_host.c \
 Src/usbh_conf.c \
