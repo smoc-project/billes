@@ -39,6 +39,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+#define PLAYER_NAME "Vince"
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
