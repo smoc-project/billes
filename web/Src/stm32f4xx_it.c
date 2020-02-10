@@ -256,7 +256,7 @@ void USART6_IRQHandler(void) {
         __HAL_UART_DISABLE_IT(&huart6, UART_IT_TC);
 
         /* Tx process is ended, restore huart->gState to Ready */
-        huart3.gState = HAL_UART_STATE_READY;
+        huart6.gState = HAL_UART_STATE_READY;
 
         bum_notify_endtx();
         return;
@@ -265,7 +265,7 @@ void USART6_IRQHandler(void) {
     return;
 
     /* USER CODE END USART6_IRQn 0 */
-    //HAL_UART_IRQHandler(&huart6);
+    // HAL_UART_IRQHandler(&huart6);
     /* USER CODE BEGIN USART6_IRQn 1 */
 
     /* USER CODE END USART6_IRQn 1 */
