@@ -320,23 +320,10 @@ int main(void) {
     MX_LWIP_Init();
     /* USER CODE BEGIN 2 */
 
-    uint8_t ip_address = 250;
-    int board_id = check_board_id();
-
-    switch (board_id) {
-    case 1: // Player de test
-        ip_address = 251;
-        strcpy(bum_player.name, "Axel");
-        break;
-    case 2: // Player
-        ip_address = 252;
-        strcpy(bum_player.name, PLAYER_NAME);
-        break;
-    }
-
     web_interface_init(&wi);
 
-    MX_LWIP_Init_(ip_address);
+    // IP address
+    MX_LWIP_Init_(29);
 
     event_init(&e);
 
