@@ -1,19 +1,13 @@
 #MicroXplorer Configuration settings - do not modify
-ADC1.Channel-0\#ChannelRegularConversion=ADC_CHANNEL_9
-ADC1.IPParameters=Rank-0\#ChannelRegularConversion,master,Channel-0\#ChannelRegularConversion,SamplingTime-0\#ChannelRegularConversion,NbrOfConversionFlag
-ADC1.NbrOfConversionFlag=1
-ADC1.Rank-0\#ChannelRegularConversion=1
-ADC1.SamplingTime-0\#ChannelRegularConversion=ADC_SAMPLETIME_3CYCLES
-ADC1.master=1
-ETH.IPParameters=MediaInterface,PhyAddress,MACAddr
-ETH.MACAddr=00\:80\:E1\:00\:00\:FF
+ETH.IPParameters=MediaInterface,MACAddr,PhyAddress
+ETH.MACAddr=00\:80\:E1\:00\:00\:29
 ETH.MediaInterface=ETH_MEDIA_INTERFACE_RMII
 ETH.PhyAddress=0
 File.Version=6
 KeepUserPlacement=false
 LWIP.GATEWAY_ADDRESS=192.168.001.254
 LWIP.IPParameters=LWIP_DHCP,IP_ADDRESS,NETMASK_ADDRESS,GATEWAY_ADDRESS,LWIP_HTTPD,LWIP_HTTPD_DYNAMIC_HEADERS,LWIP_HTTPD_CUSTOM_FILES
-LWIP.IP_ADDRESS=192.168.001.250
+LWIP.IP_ADDRESS=192.168.001.029
 LWIP.LWIP_DHCP=0
 LWIP.LWIP_HTTPD=1
 LWIP.LWIP_HTTPD_CUSTOM_FILES=1
