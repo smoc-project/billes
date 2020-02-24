@@ -322,8 +322,6 @@ int main(void) {
 
     web_interface_init(&wi);
 
-    MX_LWIP_Init();
-
     event_init(&e);
 
     HAL_UART_Receive_IT(UART_SERIAL, &serial_char, 1);
