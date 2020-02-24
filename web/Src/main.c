@@ -338,6 +338,9 @@ int main(void) {
     strcpy(json_orders, "{\"L\":[");
 
     // v = xbee_configure_API1();
+    // start receiving data on accelerometer
+    HAL_UART_Receive_IT(UART_ACCELEROMETER, acceloremeter_in,
+        ACCELEROMETER_FRAMES_LEN);
 
     while (1) {
         /* USER CODE END WHILE */
