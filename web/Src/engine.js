@@ -1,10 +1,6 @@
 // Refresh rate
 let trefresh = 50;
 
-console.log("Hello there");
-
-var player1;
-
 var x=200;
 var y=200;
 let a=0;
@@ -45,7 +41,7 @@ class Player {
   set_pos( x, y, a, s )
   {
     let scale = 1;
-    if ( s ) scale = s;
+    if ( s ) scale = s / 1000;
     let angle = 0;
     if ( a ) angle = a;
 
@@ -111,16 +107,8 @@ function handle_orders( event )
 
 function automate()
 {
-  //x++;
-  a+=1.5;
-  //s*=0.99;
-
-  player1.set_pos( x, y, a, s );
-  player1.set_text( "" + x );
-
-  // xreq.open( "GET", "/!!" );
-  // xreq.send();
-
+  xreq.open( "GET", "/!!" );
+  xreq.send();
 
   if ( trefresh > 0 )
   {
@@ -131,33 +119,37 @@ function automate()
 function apply_orders( jorders )
 {
   if ( !jorders ) return;
-	
-  var orders = JSON.parse( jorders );
+				
+  if ( jorders == "{}" ) return;
+				
+  var orders_array = JSON.parse( jorders );
   
-  if ( !orders ) return;
+  if ( !orders_array || !orders_array.L ) return;
 
-  if ( orders.move )
-  {
-	orders.move.forEach( function( item ) {
-      if ( players[ item.i ] ) {
-	    players[ item.i ].set_pos( item.x, item.y, item.a, item.s );
+  orders_array.L.forEach( function( orders ) {
+	  if ( orders.move )
+	  {
+		orders.move.forEach( function( item ) {
+	      if ( players[ item.i ] ) {
+		    players[ item.i ].set_pos( item.x, item.y, item.a, item.s );
+		  }
+	    });
 	  }
-    });
-  }
-  
-  if ( orders.new_player )
-  {
-	orders.new_player.forEach( function( item ) {
-      players[ item.i ] = new Player( item.i, item.name, item.color, 0, 0 );
-    });
-  }
-  
-  if ( orders.display )
-  {
-	orders.display.forEach( function( item ) {
-      display( item.id, item.x, item.y, item.scale, item.content );
-    });
-  }
+	  
+	  if ( orders.new_player )
+	  {
+		orders.new_player.forEach( function( item ) {
+	      players[ item.i ] = new Player( item.i, item.name, item.color, 0, 0 );
+	    });
+	  }
+	  
+	  if ( orders.display )
+	  {
+		orders.display.forEach( function( item ) {
+	      display( item.id, item.x, item.y, item.scale, item.content );
+	    });
+	  }
+  });
   
 }
 
@@ -192,8 +184,6 @@ function do_onload( t )
 	
   if ( t > 0 ) { trefresh = t; }
 
-  //player1 = document.getElementById("player1");
-
   board.setAttribute( "transform", "translate(" + r + "," + r + ")" );
   
   let n_star = 200;
@@ -205,27 +195,36 @@ function do_onload( t )
 	create_star( sx, sy, sscale );
   }
 
-  // TEST
-
-  apply_orders(
-    '{"new_player": [ { "i": 2, "name": "Red", "color": "red" }, { "i": 1, "name": "Green", "color": "green" }, { "i": 0, "name": "Blue", "color": "blue" }, { "i": 5, "name": "Pink", "color": "pink" } ] }'
-  );
-
-  apply_orders(
-    '{"move": [ { "i": 1, "x": 450, "y": 550, "a": 90, "s":1.2 }, { "i": 0, "x": 550, "y": 650, "a": 90, "s":1.5 }, { "i": 5, "x": 50, "y": 800 } ] }'
-  );
-
-  apply_orders(
-    '{"display": [ { "id": "score", "x": 10, "y": -10, "content": "WAITING" } ] }'
-  );
-  apply_orders(
-    '{"display": [ { "id": "score", "x": 10, "y": -20, "scale": 2.5 } ] }'
-  );
-
-  player1 = players[ 2 ];
+// TEST
+//  apply_orders(
+//    '{"new_player": [ { "i": 2, "name": "Red", "color": "red" }, { "i": 1, "name": "Green", "color": "green" }, { "i": 0, "name": "Blue", "color": "blue" }, { "i": 5, "name": "Pink", "color": "pink" } ] }'
+//  );
+//  apply_orders(
+//    '{"move": [ { "i": 1, "x": 450, "y": 550, "a": 90, "s":1.2 }, { "i": 0, "x": 550, "y": 650, "a": 90, "s":1.5 }, { "i": 5, "x": 50, "y": 800 } ] }'
+//  );
+//  apply_orders(
+//    '{"display": [ { "id": "score", "x": 10, "y": -10, "content": "WAITING" } ] }'
+//  );
+//  apply_orders(
+//    '{"display": [ { "id": "score", "x": 10, "y": -20, "scale": 2.5 } ] }'
+//  );
 
   automate();
 }
 
+function register_player()
+{
+  let req = new XMLHttpRequest();
+  //req.open( "GET", "/register_player/" + my_name );
+  req.open( "GET", "/register_player" );
+  req.send();
+}
 
-do_onload(25);
+function test_acceleration( ax, ay ) // FOR TEST ONLY
+{
+  let req = new XMLHttpRequest();
+  req.open( "GET", "/acc/" + ax + "/" + ay );
+  req.send();
+}
+
+do_onload(100);

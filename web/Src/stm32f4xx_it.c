@@ -23,6 +23,9 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
+#include "bum_common.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -32,7 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+ 
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -57,6 +60,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern HCD_HandleTypeDef hhcd_USB_OTG_FS;
+extern UART_HandleTypeDef huart5;
 extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart6;
 /* USER CODE BEGIN EV */
@@ -205,12 +209,79 @@ void SysTick_Handler(void)
 void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
+  uint32_t isrflags   = READ_REG(huart3.Instance->SR);
+  uint32_t cr1its     = READ_REG(huart3.Instance->CR1);
+  //uint32_t cr3its     = READ_REG(huart3.Instance->CR3);
+  uint32_t errorflags = (isrflags & (uint32_t)(USART_SR_PE | USART_SR_FE | USART_SR_ORE | USART_SR_NE));
+
+  if ( !errorflags )
+  {
+	  if (( (isrflags & USART_SR_RXNE) != RESET ) && ((cr1its & USART_CR1_RXNEIE) != RESET))
+	  {
+		  bum_notify_recv( huart3.Instance->DR & 0xFF );
+		  return;
+	  }
+  }
+  else
+  {
+	  // Read the DR register to reset the IRQ bit
+	  (void)huart3.Instance->DR;
+  }
+
+  /* UART in mode Transmitter ------------------------------------------------*/
+    if (((isrflags & USART_SR_TXE) != RESET) && ((cr1its & USART_CR1_TXEIE) != RESET))
+    {
+    	  /* Check that a Tx process is ongoing */
+    	  if (huart3.gState == HAL_UART_STATE_BUSY_TX)
+    	  {
+    		  huart3.Instance->DR = (uint8_t)(*huart3.pTxBuffPtr++ & (uint8_t)0x00FF);
+
+    	    if (--huart3.TxXferCount == 0U)
+    	    {
+    	      /* Disable the UART Transmit Complete Interrupt */
+    	      __HAL_UART_DISABLE_IT(&huart3, UART_IT_TXE);
+
+    	      /* Enable the UART Transmit Complete Interrupt */
+    	      __HAL_UART_ENABLE_IT(&huart3, UART_IT_TC);
+    	    }
+    	  }
+    	  return;
+    }
+
+    /* UART in mode Transmitter end --------------------------------------------*/
+    if (((isrflags & USART_SR_TC) != RESET) && ((cr1its & USART_CR1_TCIE) != RESET))
+    {
+    	  /* Disable the UART Transmit Complete Interrupt */
+    	  __HAL_UART_DISABLE_IT(&huart3, UART_IT_TC);
+
+    	  /* Tx process is ended, restore huart->gState to Ready */
+    	  huart3.gState = HAL_UART_STATE_READY;
+
+    	  bum_notify_endtx();
+    	  return;
+    }
+
+    return;
 
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */
 
   /* USER CODE END USART3_IRQn 1 */
+}
+
+/**
+  * @brief This function handles UART5 global interrupt.
+  */
+void UART5_IRQHandler(void)
+{
+  /* USER CODE BEGIN UART5_IRQn 0 */
+
+  /* USER CODE END UART5_IRQn 0 */
+  HAL_UART_IRQHandler(&huart5);
+  /* USER CODE BEGIN UART5_IRQn 1 */
+
+  /* USER CODE END UART5_IRQn 1 */
 }
 
 /**
@@ -233,52 +304,6 @@ void OTG_FS_IRQHandler(void)
 void USART6_IRQHandler(void)
 {
   /* USER CODE BEGIN USART6_IRQn 0 */
-
-    uint32_t isrflags = READ_REG(huart6.Instance->SR);
-    uint32_t cr1its = READ_REG(huart6.Instance->CR1);
-    //uint32_t cr3its     = READ_REG(huart6.Instance->CR3);
-    uint32_t errorflags = (isrflags & (uint32_t)(USART_SR_PE | USART_SR_FE | USART_SR_ORE | USART_SR_NE));
-
-    if (!errorflags) {
-        if (((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET)) {
-            bum_notify_recv(huart6.Instance->DR & 0xFF);
-            return;
-        }
-    } else {
-        // Read the DR register to reset the IRQ bit
-        (void)huart6.Instance->DR;
-    }
-
-    /* UART in mode Transmitter ------------------------------------------------*/
-    if (((isrflags & USART_SR_TXE) != RESET) && ((cr1its & USART_CR1_TXEIE) != RESET)) {
-        /* Check that a Tx process is ongoing */
-        if (huart6.gState == HAL_UART_STATE_BUSY_TX) {
-            huart6.Instance->DR = (uint8_t)(*huart6.pTxBuffPtr++ & (uint8_t)0x00FF);
-
-            if (--huart6.TxXferCount == 0U) {
-                /* Disable the UART Transmit Complete Interrupt */
-                __HAL_UART_DISABLE_IT(&huart6, UART_IT_TXE);
-
-                /* Enable the UART Transmit Complete Interrupt */
-                __HAL_UART_ENABLE_IT(&huart6, UART_IT_TC);
-            }
-        }
-        return;
-    }
-
-    /* UART in mode Transmitter end --------------------------------------------*/
-    if (((isrflags & USART_SR_TC) != RESET) && ((cr1its & USART_CR1_TCIE) != RESET)) {
-        /* Disable the UART Transmit Complete Interrupt */
-        __HAL_UART_DISABLE_IT(&huart6, UART_IT_TC);
-
-        /* Tx process is ended, restore huart->gState to Ready */
-        huart6.gState = HAL_UART_STATE_READY;
-
-        bum_notify_endtx();
-        return;
-    }
-
-    return;
 
   /* USER CODE END USART6_IRQn 0 */
   HAL_UART_IRQHandler(&huart6);

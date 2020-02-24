@@ -2,10 +2,7 @@
 #include <string.h>
 
 #include "bum_player.h"
-#include "engine.h"
-#include "index_html.h"
 #include "xbee.h"
-//#include "bum_referee.h"
 
 #define FS_ROOT 0
 
@@ -72,6 +69,11 @@ const char json_nil[] = "{}";
 
 char buffer[100];
 
+extern const unsigned char file_index_html[];
+extern const unsigned long file_index_html_size;
+extern const unsigned char file_engine_js[];
+extern const unsigned long file_engine_js_size;
+
 extern char json_orders[];
 extern WebInterface wi;
 
@@ -128,11 +130,11 @@ int fs_open_custom(struct fs_file* file, const char* name) {
     }
 
     else if (strcmp(name, "/index.html") == 0) {
-        file->data = (const char*)index_html_data;
-        len = index_html_data_length;
+        file->data = (const char*)file_index_html;
+        len = file_index_html_size;
     } else if (strcmp(name, "/engine.js") == 0) {
-        file->data = (const char*)engine_data;
-        len = engine_data_length;
+        file->data = (const char*)file_engine_js;
+        len = file_engine_js_size;
     } else if (strcmp(name, "/xbee_log.html") == 0) {
         file->data = xbee_log_get();
         len = xbee_log_len();
@@ -169,16 +171,6 @@ int fs_open_custom(struct fs_file* file, const char* name) {
     else {
         len = 2;
         file->data = "ok";
-
-#if 0
-	len = strlen( hello1 ) + strlen( hello2 ) + strlen( name );
-
-    file->data = ( char * )malloc( len + 1 );
-    strcpy( ( char * )file->data, hello1 );
-    strcat( ( char * )file->data, name );
-    strcat( ( char * )file->data, hello2 );
-    file->flags |= 0x04;
-#endif
     }
 
     file->len = len;
