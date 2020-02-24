@@ -52,6 +52,7 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
+UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart3;
 UART_HandleTypeDef huart6;
 
@@ -64,6 +65,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART6_UART_Init(void);
+static void MX_UART5_Init(void);
 static void MX_USART3_UART_Init(void);
 void MX_USB_HOST_Process(void);
 
@@ -75,13 +77,13 @@ void MX_USB_HOST_Process(void);
 /* USER CODE BEGIN 0 */
 
 // Accelerometer constants
-USART_TypeDef* ACCELEROMETER = USART3;
-UART_HandleTypeDef* UART_ACCELEROMETER = &huart3;
+USART_TypeDef* ACCELEROMETER = USART5;
+UART_HandleTypeDef* UART_ACCELEROMETER = &huart5;
 #define ACCELEROMETER_FRAMES_LEN 3
 
 // Radio constants
-USART_TypeDef* RADIO = USART6;
-UART_HandleTypeDef* UART_RADIO = &huart6;
+USART_TypeDef* RADIO = USART3;
+UART_HandleTypeDef* UART_RADIO = &huart3;
 #define RADIO_IN_FRAMES_LEN 4
 #define RADIO_OUT_FRAMES_LEN 4
 
@@ -215,6 +217,7 @@ int main(void) {
     MX_LWIP_Init();
     MX_USB_HOST_Init();
     MX_USART6_UART_Init();
+    MX_UART5_Init();
     MX_USART3_UART_Init();
     /* USER CODE BEGIN 2 */
     // Start receiving data on USART3 and USART6
@@ -304,6 +307,36 @@ static void MX_I2C1_Init(void) {
     /* USER CODE BEGIN I2C1_Init 2 */
 
     /* USER CODE END I2C1_Init 2 */
+}
+
+/**
+  * @brief UART5 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_UART5_Init(void) {
+
+    /* USER CODE BEGIN UART5_Init 0 */
+
+    /* USER CODE END UART5_Init 0 */
+
+    /* USER CODE BEGIN UART5_Init 1 */
+
+    /* USER CODE END UART5_Init 1 */
+    huart5.Instance = UART5;
+    huart5.Init.BaudRate = 115200;
+    huart5.Init.WordLength = UART_WORDLENGTH_8B;
+    huart5.Init.StopBits = UART_STOPBITS_1;
+    huart5.Init.Parity = UART_PARITY_NONE;
+    huart5.Init.Mode = UART_MODE_TX_RX;
+    huart5.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    huart5.Init.OverSampling = UART_OVERSAMPLING_16;
+    if (HAL_UART_Init(&huart5) != HAL_OK) {
+        Error_Handler();
+    }
+    /* USER CODE BEGIN UART5_Init 2 */
+
+    /* USER CODE END UART5_Init 2 */
 }
 
 /**
@@ -460,13 +493,13 @@ static void MX_GPIO_Init(void) {
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : I2S3_SCK_Pin I2S3_SD_Pin */
-    GPIO_InitStruct.Pin = I2S3_SCK_Pin | I2S3_SD_Pin;
+    /*Configure GPIO pin : I2S3_SCK_Pin */
+    GPIO_InitStruct.Pin = I2S3_SCK_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    HAL_GPIO_Init(I2S3_SCK_GPIO_Port, &GPIO_InitStruct);
 
     /*Configure GPIO pin : OTG_FS_OverCurrent_Pin */
     GPIO_InitStruct.Pin = OTG_FS_OverCurrent_Pin;
