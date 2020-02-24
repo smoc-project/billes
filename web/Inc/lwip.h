@@ -40,6 +40,7 @@
 #endif /* WITH_RTOS */
 
 /* USER CODE BEGIN 0 */
+void MX_LWIP_Init_( uint8_t x );
 
 /* USER CODE END 0 */
 
