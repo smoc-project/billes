@@ -322,8 +322,7 @@ int main(void) {
 
     web_interface_init(&wi);
 
-    // IP address
-    MX_LWIP_Init_(29);
+    MX_LWIP_Init();
 
     event_init(&e);
 
